@@ -1,0 +1,22 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+*.class
+*.so
+.env
+venv/
+env/
+.venv/
+
+# C++ and CMake builds
+build/
+bin/
+*.o
+*.obj
+*.exe
+*.dll
+*.pyd
+
+# IDE
+.vscode/
+.idea/

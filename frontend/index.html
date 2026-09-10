@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delhi NCR Air Quality Forecast System</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/dashboard.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <!-- Leaflet Heat -->
+    <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- 1. Header Bar -->
+        <header class="header-bar">
+            <div class="header-titles">
+                <h1>Delhi NCR Air Quality Forecast System</h1>
+                <h2>WRF-Chem + AI-Powered 72-Hour Prediction</h2>
+                <div class="last-updated">Last updated: <span id="last-updated-time">Loading...</span></div>
+            </div>
+            <div class="header-badge" id="overall-aqi-badge">
+                <span class="badge-value">---</span>
+                <span class="badge-label">Loading</span>
+            </div>
+        </header>
+
+        <!-- 2. Stats Row -->
+        <section class="stats-row">
+            <div class="stat-card" id="card-current-aqi">
+                <h3>Current AQI</h3>
+                <div class="stat-value" id="stat-val-current">---</div>
+                <div class="stat-sub" id="stat-cat-current">Loading</div>
+            </div>
+            <div class="stat-card" id="card-peak-aqi">
+                <h3>Peak AQI Next 72h</h3>
+                <div class="stat-value" id="stat-val-peak">---</div>
+                <div class="stat-sub" id="stat-time-peak">Loading</div>
+            </div>
+            <div class="stat-card" id="card-inversion">
+                <h3>Inversion Status</h3>
+                <div class="stat-value" id="stat-val-inversion">---</div>
+                <div class="stat-sub">Strength Gauge</div>
+            </div>
+            <div class="stat-card" id="card-stubble">
+                <h3>Stubble Burning</h3>
+                <div class="stat-value" id="stat-val-stubble">---</div>
+                <div class="stat-sub" id="stat-int-stubble">Intensity</div>
+            </div>
+        </section>
+
+        <div class="main-content-grid">
+            <!-- Left Column: Map and Controls -->
+            <div class="left-col">
+                <div class="controls-section card">
+                    <label for="station-select">Select Station:</label>
+                    <select id="station-select">
+                        <option value="all">All Stations (Delhi Avg)</option>
+                    </select>
+                </div>
+
+                <!-- 3. Map Section -->
+                <div class="map-section card">
+                    <div id="map"></div>
+                </div>
+
+                <!-- 7. Health Advisory Section -->
+                <div class="health-advisory card" id="health-advisory-card">
+                    <div class="health-content">
+                        <div class="health-main">
+                            <div class="health-aqi" id="health-aqi-value">---</div>
+                            <div class="health-cat" id="health-aqi-cat">Loading</div>
+                        </div>
+                        <div class="health-recommendations">
+                            <div class="health-mask">
+                                <span class="mask-icon">😷</span>
+                                <span id="health-mask-text">Checking...</span>
+                            </div>
+                            <div class="health-text" id="health-adv-text">Waiting for data...</div>
+                        </div>
+                    </div>
+                    <div class="aqi-reference" id="aqi-reference-table">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Charts and Analysis -->
+            <div class="right-col">
+                <!-- 5. 72-Hour Forecast Section -->
+                <div class="forecast-section card">
+                    <h3>72-Hour AQI Forecast</h3>
+                    <div class="chart-container">
+                        <canvas id="forecast-chart"></canvas>
+                    </div>
+                </div>
+
+                <!-- 6. Pollutant Breakdown Section -->
+                <div class="pollutant-section card">
+                    <h3>Pollutant Breakdown</h3>
+                    <div class="chart-container">
+                        <canvas id="pollutant-chart"></canvas>
+                    </div>
+                </div>
+
+                <div class="bottom-analysis-grid">
+                    <!-- 8. Inversion Monitor Section -->
+                    <div class="inversion-monitor card">
+                        <h3>Inversion Monitor</h3>
+                        <div class="inversion-content">
+                            <div id="inversion-gauge-container">
+                                <div id="inversion-gauge">
+                                    <div class="gauge-center">
+                                        <span id="gauge-val">0</span>°C
+                                    </div>
+                                </div>
+                                <div>Strength</div>
+                            </div>
+                            <div class="chart-container" style="flex:1;">
+                                <canvas id="inversion-chart"></canvas>
+                            </div>
+                        </div>
+                        <div id="inversion-profile">
+                            <canvas id="profile-canvas" width="200" height="150"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 9. Stubble Burning Tracker -->
+                    <div class="stubble-tracker card">
+                        <h3>Stubble Burning Impact</h3>
+                        <div class="stubble-content">
+                            <div class="wind-rose" id="wind-rose">
+                                <div class="wind-arrow" id="wind-arrow">↑</div>
+                                <div class="wind-label" id="wind-dir-label">N</div>
+                            </div>
+                            <div class="stubble-info">
+                                <div>Season: <span id="stubble-season">Inactive</span></div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="stubble-intensity-fill" style="width: 0%"></div>
+                                </div>
+                                <div>Est. PM2.5 Contribution: <span id="stubble-contribution">0%</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 10. Footer -->
+        <footer class="footer">
+            <p>Problem Statement ID: 26082 | Ministry of Earth Sciences | NCMRWF</p>
+            <p class="data-sources">Data sources: CPCB, SAFAR, WRF-Chem runs. UI updates every 60s.</p>
+            <p class="tech-stack">Built with Leaflet, Chart.js, HTML5, CSS Grid</p>
+        </footer>
+    </div>
+    
+    <!-- App Scripts -->
+    <script src="js/api.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/health.js"></script>
+    <script src="js/inversion.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+{
+  "kharif": {
+    "start": "10-01",
+    "end": "11-30",
+    "peak_start": "10-25",
+    "peak_end": "11-15",
+    "source_direction_deg": 315,
+    "source_regions": ["Punjab", "Haryana"],
+    "daily_intensity_curve": {
+      "10-01": 0.1,
+      "10-15": 0.3,
+      "10-25": 0.7,
+      "11-01": 1.0,
+      "11-10": 0.9,
+      "11-15": 0.6,
+      "11-25": 0.2,
+      "11-30": 0.05
+    },
+    "pm25_contribution_percent": {
+      "min": 15,
+      "max": 45
+    }
+  },
+  "rabi": {
+    "start": "04-15",
+    "end": "05-31",
+    "peak_start": "05-01",
+    "peak_end": "05-15",
+    "source_direction_deg": 315,
+    "source_regions": ["Punjab", "Haryana"],
+    "daily_intensity_curve": {
+      "04-15": 0.1,
+      "04-25": 0.4,
+      "05-01": 0.8,
+      "05-05": 1.0,
+      "05-15": 0.7,
+      "05-25": 0.2,
+      "05-31": 0.05
+    },
+    "pm25_contribution_percent": {
+      "min": 5,
+      "max": 15
+    }
+  }
+}
