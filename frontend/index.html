@@ -3,173 +3,434 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delhi NCR Air Quality Forecast System</title>
-    
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-    
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="css/dashboard.css">
-    
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    
-    <!-- Leaflet Heat -->
-    <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+    <title>AirAware — Air Pollution–Weather Coupled Forecasting | Delhi NCR</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <div class="dashboard-container">
-        <!-- 1. Header Bar -->
-        <header class="header-bar">
-            <div class="header-titles">
-                <h1>Delhi NCR Air Quality Forecast System</h1>
-                <h2>WRF-Chem + AI-Powered 72-Hour Prediction</h2>
-                <div class="last-updated">Last updated: <span id="last-updated-time">Loading...</span></div>
-            </div>
-            <div class="header-badge" id="overall-aqi-badge">
-                <span class="badge-value">---</span>
-                <span class="badge-label">Loading</span>
-            </div>
-        </header>
+<body class="theme-dark">
 
-        <!-- 2. Stats Row -->
-        <section class="stats-row">
-            <div class="stat-card" id="card-current-aqi">
-                <h3>Current AQI</h3>
-                <div class="stat-value" id="stat-val-current">---</div>
-                <div class="stat-sub" id="stat-cat-current">Loading</div>
-            </div>
-            <div class="stat-card" id="card-peak-aqi">
-                <h3>Peak AQI Next 72h</h3>
-                <div class="stat-value" id="stat-val-peak">---</div>
-                <div class="stat-sub" id="stat-time-peak">Loading</div>
-            </div>
-            <div class="stat-card" id="card-inversion">
-                <h3>Inversion Status</h3>
-                <div class="stat-value" id="stat-val-inversion">---</div>
-                <div class="stat-sub">Strength Gauge</div>
-            </div>
-            <div class="stat-card" id="card-stubble">
-                <h3>Stubble Burning</h3>
-                <div class="stat-value" id="stat-val-stubble">---</div>
-                <div class="stat-sub" id="stat-int-stubble">Intensity</div>
-            </div>
-        </section>
-
-        <div class="main-content-grid">
-            <!-- Left Column: Map and Controls -->
-            <div class="left-col">
-                <div class="controls-section card">
-                    <label for="station-select">Select Station:</label>
-                    <select id="station-select">
-                        <option value="all">All Stations (Delhi Avg)</option>
-                    </select>
-                </div>
-
-                <!-- 3. Map Section -->
-                <div class="map-section card">
-                    <div id="map"></div>
-                </div>
-
-                <!-- 7. Health Advisory Section -->
-                <div class="health-advisory card" id="health-advisory-card">
-                    <div class="health-content">
-                        <div class="health-main">
-                            <div class="health-aqi" id="health-aqi-value">---</div>
-                            <div class="health-cat" id="health-aqi-cat">Loading</div>
-                        </div>
-                        <div class="health-recommendations">
-                            <div class="health-mask">
-                                <span class="mask-icon">😷</span>
-                                <span id="health-mask-text">Checking...</span>
-                            </div>
-                            <div class="health-text" id="health-adv-text">Waiting for data...</div>
-                        </div>
+    <!-- ========== SCREEN 1: SPLASH ========== -->
+    <section id="screen-splash" class="page active">
+        <div class="splash-wrapper">
+            <div class="splash-left">
+                <div class="splash-logo-area">
+                    <div class="splash-icon-ring">
+                        <i class="fa-solid fa-wind splash-main-icon"></i>
                     </div>
-                    <div class="aqi-reference" id="aqi-reference-table">
-                        <!-- Populated by JS -->
+                    <h1 class="splash-title">AirAware</h1>
+                    <p class="splash-tagline">Breathe Better. Live Better.</p>
+                    <div class="splash-pipeline-badge mt-large">
+                        <span><i class="fa-solid fa-cloud-bolt"></i> WRF-Chem</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                        <span><i class="fa-solid fa-brain"></i> TensorFlow</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                        <span><i class="fa-solid fa-gauge-high"></i> AQI</span>
                     </div>
+                    <p class="text-small text-muted mt-normal">Air Pollution–Weather Coupled Forecasting System</p>
+                    <p class="text-small text-muted">Delhi NCR &bull; Ministry of Earth Sciences &bull; NCMRWF</p>
                 </div>
             </div>
+            <div class="splash-right">
+                <div class="splash-features">
+                    <div class="splash-feat"><i class="fa-solid fa-cloud-bolt text-accent"></i><span>WRF-Chem Coupled Meteorology</span></div>
+                    <div class="splash-feat"><i class="fa-solid fa-brain text-purple"></i><span>AI Human-Factor Adjustment</span></div>
+                    <div class="splash-feat"><i class="fa-solid fa-fire text-orange"></i><span>Stubble Burning Tracking</span></div>
+                    <div class="splash-feat"><i class="fa-solid fa-layer-group text-yellow"></i><span>Atmospheric Inversion Monitoring</span></div>
+                    <div class="splash-feat"><i class="fa-solid fa-clock text-green"></i><span>72-Hour Hourly Forecast</span></div>
+                </div>
+            </div>
+            <div class="splash-loader">
+                <div class="loader-bar"><div class="loader-fill"></div></div>
+                <p class="text-small text-muted mt-small">Initializing WRF-Chem coupled model...</p>
+            </div>
+        </div>
+    </section>
 
-            <!-- Right Column: Charts and Analysis -->
-            <div class="right-col">
-                <!-- 5. 72-Hour Forecast Section -->
-                <div class="forecast-section card">
-                    <h3>72-Hour AQI Forecast</h3>
-                    <div class="chart-container">
-                        <canvas id="forecast-chart"></canvas>
+    <!-- ========== SCREEN 2: CHOOSE THEME ========== -->
+    <section id="screen-theme" class="page">
+        <div class="page-nav">
+            <button class="nav-back" onclick="navTo('screen-splash')"><i class="fa-solid fa-arrow-left"></i></button>
+            <h3>AirAware</h3>
+            <button class="nav-action" onclick="navTo('screen-search')"><i class="fa-solid fa-gear"></i></button>
+        </div>
+        <div class="page-center-content">
+            <div class="theme-page-inner">
+                <h1>Choose your theme</h1>
+                <p class="text-muted mt-small">Pick a theme that matches your vibe</p>
+                <div class="theme-grid-desktop mt-large">
+                    <div class="theme-card-dt active" data-theme="theme-dark">
+                        <div class="theme-preview dark-preview"><i class="fa-solid fa-cloud-moon fa-2x"></i></div>
+                        <div class="theme-info"><span class="font-bold">Dark</span><p class="text-small text-muted">Deep space aesthetic</p></div>
+                        <i class="fa-solid fa-circle-check check-icon"></i>
+                    </div>
+                    <div class="theme-card-dt" data-theme="theme-ocean">
+                        <div class="theme-preview ocean-preview"><i class="fa-solid fa-water fa-2x"></i></div>
+                        <div class="theme-info"><span class="font-bold">Ocean</span><p class="text-small text-muted">Deep sea blues</p></div>
+                        <i class="fa-regular fa-circle check-icon"></i>
+                    </div>
+                    <div class="theme-card-dt" data-theme="theme-violet">
+                        <div class="theme-preview violet-preview"><i class="fa-solid fa-wand-magic-sparkles fa-2x"></i></div>
+                        <div class="theme-info"><span class="font-bold">Violet</span><p class="text-small text-muted">Royal purple haze</p></div>
+                        <i class="fa-regular fa-circle check-icon"></i>
+                    </div>
+                    <div class="theme-card-dt" data-theme="theme-emerald">
+                        <div class="theme-preview emerald-preview"><i class="fa-solid fa-leaf fa-2x"></i></div>
+                        <div class="theme-info"><span class="font-bold">Emerald</span><p class="text-small text-muted">Nature green tones</p></div>
+                        <i class="fa-regular fa-circle check-icon"></i>
+                    </div>
+                    <div class="theme-card-dt" data-theme="theme-sunset">
+                        <div class="theme-preview sunset-preview"><i class="fa-solid fa-sun fa-2x"></i></div>
+                        <div class="theme-info"><span class="font-bold">Sunset</span><p class="text-small text-muted">Warm orange glow</p></div>
+                        <i class="fa-regular fa-circle check-icon"></i>
+                    </div>
+                    <div class="theme-card-dt" data-theme="theme-pink">
+                        <div class="theme-preview pink-preview"><i class="fa-solid fa-heart fa-2x"></i></div>
+                        <div class="theme-info"><span class="font-bold">Pink</span><p class="text-small text-muted">Neon pink vibes</p></div>
+                        <i class="fa-regular fa-circle check-icon"></i>
+                    </div>
+                    <div class="theme-card-dt" data-theme="theme-cyber">
+                        <div class="theme-preview cyber-preview"><i class="fa-solid fa-terminal fa-2x"></i></div>
+                        <div class="theme-info"><span class="font-bold">Cyber</span><p class="text-small text-muted">Matrix green code</p></div>
+                        <i class="fa-regular fa-circle check-icon"></i>
                     </div>
                 </div>
+                <button class="btn-primary btn-lg mt-large" id="btn-apply-theme">Apply Theme <i class="fa-solid fa-arrow-right ml-small"></i></button>
+            </div>
+        </div>
+    </section>
 
-                <!-- 6. Pollutant Breakdown Section -->
-                <div class="pollutant-section card">
-                    <h3>Pollutant Breakdown</h3>
-                    <div class="chart-container">
-                        <canvas id="pollutant-chart"></canvas>
+    <!-- ========== SCREEN 3: SEARCH LOCATION ========== -->
+    <section id="screen-search" class="page">
+        <div class="page-nav">
+            <button class="nav-back" onclick="navTo('screen-theme')"><i class="fa-solid fa-arrow-left"></i></button>
+            <h3>Select Location</h3>
+            <button class="nav-action"><i class="fa-solid fa-gear"></i></button>
+        </div>
+        <div class="page-center-content">
+            <div class="search-page-inner">
+                <div class="search-panel">
+                    <h2>Where do you want to check AQI?</h2>
+                    <div class="search-section mt-large">
+                        <div class="step-label"><span class="step-badge">1</span> <span>Search by typing</span></div>
+                        <div class="search-bar-lg mt-normal">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" placeholder="Search city, area or landmark in Delhi NCR...">
+                        </div>
+                        <p class="text-small text-muted mt-normal">Suggestions</p>
+                        <ul class="suggestions-list mt-small">
+                            <li onclick="selectLocation('Rohini, Delhi')"><i class="fa-solid fa-location-dot"></i> Rohini, Delhi, India</li>
+                            <li onclick="selectLocation('Connaught Place, Delhi')"><i class="fa-solid fa-location-dot"></i> Connaught Place, Delhi, India</li>
+                            <li onclick="selectLocation('Anand Vihar, Delhi')"><i class="fa-solid fa-location-dot"></i> Anand Vihar, Delhi, India</li>
+                            <li onclick="selectLocation('Sector 62, Noida')"><i class="fa-solid fa-location-dot"></i> Sector 62, Noida, India</li>
+                            <li onclick="selectLocation('Gurugram, Haryana')"><i class="fa-solid fa-location-dot"></i> Gurugram, Haryana, India</li>
+                            <li onclick="selectLocation('Ghaziabad, UP')"><i class="fa-solid fa-location-dot"></i> Ghaziabad, UP, India</li>
+                        </ul>
                     </div>
-                </div>
-
-                <div class="bottom-analysis-grid">
-                    <!-- 8. Inversion Monitor Section -->
-                    <div class="inversion-monitor card">
-                        <h3>Inversion Monitor</h3>
-                        <div class="inversion-content">
-                            <div id="inversion-gauge-container">
-                                <div id="inversion-gauge">
-                                    <div class="gauge-center">
-                                        <span id="gauge-val">0</span>°C
-                                    </div>
-                                </div>
-                                <div>Strength</div>
-                            </div>
-                            <div class="chart-container" style="flex:1;">
-                                <canvas id="inversion-chart"></canvas>
-                            </div>
+                    <div class="divider"><span>or</span></div>
+                    <div class="search-section">
+                        <div class="step-label"><span class="step-badge">2</span> <span>Select on map</span></div>
+                        <div class="map-preview-btn mt-normal" onclick="selectLocation('Current Location')">
+                            <i class="fa-solid fa-map-location-dot fa-3x text-accent"></i>
+                            <p class="mt-small">Click to open interactive map</p>
                         </div>
-                        <div id="inversion-profile">
-                            <canvas id="profile-canvas" width="200" height="150"></canvas>
-                        </div>
-                    </div>
-
-                    <!-- 9. Stubble Burning Tracker -->
-                    <div class="stubble-tracker card">
-                        <h3>Stubble Burning Impact</h3>
-                        <div class="stubble-content">
-                            <div class="wind-rose" id="wind-rose">
-                                <div class="wind-arrow" id="wind-arrow">↑</div>
-                                <div class="wind-label" id="wind-dir-label">N</div>
-                            </div>
-                            <div class="stubble-info">
-                                <div>Season: <span id="stubble-season">Inactive</span></div>
-                                <div class="progress-bar">
-                                    <div class="progress-fill" id="stubble-intensity-fill" style="width: 0%"></div>
-                                </div>
-                                <div>Est. PM2.5 Contribution: <span id="stubble-contribution">0%</span></div>
-                            </div>
-                        </div>
+                        <button class="btn-secondary mt-normal" onclick="selectLocation('Current Location')"><i class="fa-solid fa-location-crosshairs"></i> Use My Current Location</button>
                     </div>
                 </div>
             </div>
         </div>
+    </section>
 
-        <!-- 10. Footer -->
-        <footer class="footer">
-            <p>Problem Statement ID: 26082 | Ministry of Earth Sciences | NCMRWF</p>
-            <p class="data-sources">Data sources: CPCB, SAFAR, WRF-Chem runs. UI updates every 60s.</p>
-            <p class="tech-stack">Built with Leaflet, Chart.js, HTML5, CSS Grid</p>
-        </footer>
+    <!-- ========== SCREEN 4: MAP CONFIRM ========== -->
+    <section id="screen-confirm" class="page">
+        <div id="real-map" class="full-map"></div>
+        <div class="map-top-bar">
+            <button class="icon-btn-circle" onclick="navTo('screen-search')"><i class="fa-solid fa-arrow-left"></i></button>
+            <div class="map-search-pill"><span id="confirm-location-text">Rohini, Delhi</span> <i class="fa-solid fa-xmark text-muted"></i></div>
+            <button class="icon-btn-circle"><i class="fa-solid fa-bars"></i></button>
+        </div>
+        <div class="map-bottom-sheet">
+            <p class="text-small text-muted">Selected Location</p>
+            <div class="flex-between mt-small">
+                <h2 id="sheet-location-name">Rohini, Delhi, India</h2>
+                <i class="fa-regular fa-star text-muted fa-lg"></i>
+            </div>
+            <div class="confirm-aqi-row mt-normal">
+                <p class="text-small text-muted">Current AQI</p>
+                <div class="confirm-aqi-display mt-small">
+                    <span class="confirm-aqi-num" id="confirm-aqi-val">142</span>
+                    <div>
+                        <span class="dot large" id="confirm-aqi-dot"></span>
+                        <span id="confirm-aqi-text" class="font-bold text-small">Unhealthy for Sensitive Groups</span>
+                    </div>
+                </div>
+            </div>
+            <button class="btn-primary btn-lg w-full mt-normal" onclick="loadForecastPage()">
+                View AQI Forecast <i class="fa-solid fa-arrow-right ml-small"></i>
+            </button>
+        </div>
+    </section>
+
+    <!-- ========== SCREEN 5: 7-DAY FORECAST ========== -->
+    <section id="screen-forecast" class="page">
+        <div class="page-nav">
+            <button class="nav-back" onclick="navTo('screen-confirm')"><i class="fa-solid fa-arrow-left"></i></button>
+            <div class="nav-title-area">
+                <h3 id="dashboard-location">Rohini, Delhi <i class="fa-solid fa-chevron-down text-small"></i></h3>
+                <p class="text-small text-muted">7-Day AQI Forecast</p>
+            </div>
+            <button class="nav-action"><i class="fa-regular fa-bookmark"></i></button>
+        </div>
+        <div class="forecast-page-layout">
+            <div class="forecast-main-area">
+                <div class="forecast-list-box" id="forecast-list-container">
+                    <div class="loader-container"><div class="loader"></div></div>
+                </div>
+                <div class="best-day-box mt-normal" id="best-day-card"></div>
+            </div>
+            <div class="forecast-side-area">
+                <!-- Atmospheric Inversion -->
+                <div class="card inversion-card">
+                    <h4><i class="fa-solid fa-layer-group text-purple mr-small"></i> Atmospheric Inversion</h4>
+                    <p class="text-small text-muted mt-small">WRF-Chem PBL Analysis</p>
+                    <div class="inv-metrics mt-normal">
+                        <div class="inv-row"><span class="text-small text-muted">PBL Height</span><span class="font-bold text-red" id="side-pbl">320 m</span></div>
+                        <div class="inv-row mt-small"><span class="text-small text-muted">Inversion</span>
+                            <div class="inv-bar-wrap"><div class="inv-bar-bg"><div class="inv-bar-fill" id="side-inv-bar" style="width:78%"></div></div><span class="text-small font-bold text-orange">Strong</span></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Stubble Burning -->
+                <div class="card stubble-card mt-normal">
+                    <h4><i class="fa-solid fa-fire text-orange mr-small"></i> Stubble Burning</h4>
+                    <p class="text-small text-muted mt-small">NASA FIRMS Satellite Data</p>
+                    <div class="stub-info mt-normal">
+                        <div class="stub-row"><span class="text-small">Active Fires</span><span class="text-red font-bold">2,847</span></div>
+                        <div class="stub-row mt-small"><span class="text-small">Plume Direction</span><span class="text-orange font-bold"><i class="fa-solid fa-location-arrow" style="transform:rotate(135deg)"></i> SE → Delhi</span></div>
+                        <div class="stub-row mt-small"><span class="text-small">ETA</span><span class="text-yellow font-bold">~6–8 hrs</span></div>
+                    </div>
+                </div>
+                <!-- Pipeline -->
+                <div class="card pipeline-mini mt-normal">
+                    <h4><i class="fa-solid fa-diagram-project text-accent mr-small"></i> Model Pipeline</h4>
+                    <div class="pipe-steps mt-normal">
+                        <div class="ps"><div class="ps-dot wrf-bg"><i class="fa-solid fa-cloud-bolt"></i></div><span class="text-small">WRF-Chem</span></div>
+                        <i class="fa-solid fa-arrow-right text-muted text-small"></i>
+                        <div class="ps"><div class="ps-dot tf-bg"><i class="fa-solid fa-brain"></i></div><span class="text-small">TF Model 2</span></div>
+                        <i class="fa-solid fa-arrow-right text-muted text-small"></i>
+                        <div class="ps"><div class="ps-dot final-bg"><i class="fa-solid fa-gauge-high"></i></div><span class="text-small">AQI</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Bottom Nav -->
+        <nav class="bottom-nav-bar">
+            <div class="bnav-item active"><i class="fa-solid fa-folder-open"></i><span>Forecast</span></div>
+            <div class="bnav-item" onclick="navTo('screen-confirm')"><i class="fa-solid fa-location-dot"></i><span>Map</span></div>
+            <div class="bnav-item" onclick="navTo('screen-safety')"><i class="fa-regular fa-bell"></i><span>Alerts</span></div>
+            <div class="bnav-item" onclick="navTo('screen-theme')"><i class="fa-solid fa-ellipsis"></i><span>More</span></div>
+        </nav>
+    </section>
+
+    <!-- ========== SCREEN 6: SELECTED DATE DETAILS ========== -->
+    <section id="screen-details" class="page">
+        <div class="page-nav">
+            <button class="nav-back" onclick="navTo('screen-forecast')"><i class="fa-solid fa-arrow-left"></i></button>
+            <h3 id="selected-date-title">Tuesday, 8 September</h3>
+            <button class="nav-action"><i class="fa-solid fa-share-nodes"></i></button>
+        </div>
+        <div class="details-scroll">
+            <p class="text-small text-muted mb-normal"><i class="fa-solid fa-location-dot"></i> <span id="sd-location">Rohini, Delhi</span></p>
+
+            <!-- Hero AQI -->
+            <div class="card hero-aqi-card">
+                <div class="hero-top-row flex-between align-center">
+                    <div class="hero-model-tags">
+                        <span class="model-tag wrf"><i class="fa-solid fa-cloud-bolt"></i> WRF-Chem</span>
+                        <span class="model-tag tf"><i class="fa-solid fa-brain"></i> TF Model 2</span>
+                    </div>
+                    <button class="info-pill" onclick="showModal()"><i class="fa-solid fa-circle-info"></i> How it's predicted</button>
+                </div>
+                <div class="hero-center mt-normal">
+                    <div class="hero-big-aqi">
+                        <p class="text-muted text-small">AQI</p>
+                        <h1 id="sd-aqi-val">156</h1>
+                        <div class="hero-cat"><span class="dot extra-large" id="sd-aqi-dot"></span><span id="sd-aqi-text" class="font-bold">Unhealthy for Sensitive Groups</span></div>
+                    </div>
+                    <div class="hero-adjust-box">
+                        <div class="adj-pair">
+                            <div class="adj-col"><p class="text-small text-muted">WRF-Chem Raw</p><h2 id="wrf-raw">138</h2></div>
+                            <i class="fa-solid fa-arrow-right text-accent"></i>
+                            <div class="adj-col"><p class="text-small text-muted">TF Adjusted</p><h2 class="text-orange" id="tf-adjusted">156</h2></div>
+                        </div>
+                        <p class="text-small text-muted mt-small" id="adjust-reason"><i class="fa-solid fa-fire text-orange"></i> +18: Stubble burning + weekday traffic</p>
+                    </div>
+                </div>
+                <div class="aqi-scale-container mt-large">
+                    <div class="aqi-scale-bar"><div class="scale-gradient"></div><div class="scale-marker" id="sd-scale-marker"></div></div>
+                    <div class="scale-labels">
+                        <span>0<br>Good</span><span>51<br>Mod</span><span>101<br>Unh SG</span><span>151<br>Unh</span><span>201<br>V.Unh</span><span>301+<br>Haz</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary -->
+            <div class="summary-row mt-normal">
+                <div class="card summary-card"><p class="text-small text-muted">Min</p><h2 class="text-yellow" id="sd-min">98</h2><span class="text-small text-yellow">Moderate</span></div>
+                <div class="card summary-card"><p class="text-small text-muted">Max</p><h2 class="text-red" id="sd-max">176</h2><span class="text-small text-red">Unhealthy</span></div>
+                <div class="card summary-card"><p class="text-small text-muted">Avg</p><h2 class="text-orange" id="sd-avg">136</h2><span class="text-small text-orange">Unh SG</span></div>
+            </div>
+            <div class="card main-poll-row mt-small">
+                <p class="text-small">Main Pollutant: <span class="text-main font-bold">PM2.5</span> &bull; Concentration: <span class="text-main font-bold" id="sd-pm25-val">78</span> µg/m³</p>
+            </div>
+
+            <!-- HOURLY AQI SECTION (ABOVE TEMP) -->
+            <div class="card mt-normal">
+                <div class="flex-between mb-normal">
+                    <div><h4><i class="fa-solid fa-chart-line text-accent mr-small"></i> Hourly AQI</h4><p class="text-small text-muted">Color-coded coupled forecast</p></div>
+                    <span class="badge-pill bg-accent-tint">72h</span>
+                </div>
+                <div class="aqi-graph-container"><div class="chart-tooltip hidden" id="chart-tooltip"></div><svg id="aqi-svg-chart" viewBox="0 0 800 220" preserveAspectRatio="none"></svg></div>
+                <div class="aqi-color-legend mt-small">
+                    <span class="legend-item"><span class="legend-dot bg-green"></span>Good</span>
+                    <span class="legend-item"><span class="legend-dot bg-yellow"></span>Moderate</span>
+                    <span class="legend-item"><span class="legend-dot bg-orange"></span>Sensitive</span>
+                    <span class="legend-item"><span class="legend-dot bg-red"></span>Unhealthy</span>
+                    <span class="legend-item"><span class="legend-dot bg-purple"></span>V.Unhealthy</span>
+                    <span class="legend-item"><span class="legend-dot bg-maroon"></span>Hazardous</span>
+                </div>
+                <div class="hourly-strip-scroll mt-normal"><div class="hourly-row" id="sd-aqi-row"></div></div>
+            </div>
+
+            <!-- HOURLY TEMP SECTION (BELOW AQI) -->
+            <div class="card mt-normal">
+                <h4><i class="fa-solid fa-temperature-half text-yellow mr-small"></i> Hourly Temperature (°C)</h4>
+                <p class="text-small text-muted">WRF-Chem atmospheric simulation</p>
+                <div class="hourly-strip-scroll mt-normal"><div class="hourly-row" id="sd-temp-row"></div></div>
+            </div>
+
+            <!-- Best Time -->
+            <div class="card best-time-card mt-normal">
+                <h4 class="text-green"><i class="fa-regular fa-circle-check mr-small"></i> Best Time to Go Outside</h4>
+                <p class="text-small mt-small">Best Window: <span class="text-green font-bold">6:00 AM – 9:30 AM</span> & <span class="text-green font-bold">After 7:00 PM</span></p>
+                <p class="text-small text-muted mt-small">Lower AQI + Cooler temperatures</p>
+            </div>
+
+            <!-- Meteorological Parameters -->
+            <div class="card mt-normal">
+                <h4><i class="fa-solid fa-wind text-accent mr-small"></i> Meteorological Parameters <span class="badge ml-small">WRF-Chem</span></h4>
+                <div class="meteo-grid mt-normal">
+                    <div class="meteo-item"><i class="fa-solid fa-wind text-accent"></i><div><span class="text-small text-muted">Wind</span><p class="font-bold">8.2 km/h NW</p></div></div>
+                    <div class="meteo-item"><i class="fa-solid fa-droplet text-blue"></i><div><span class="text-small text-muted">Humidity</span><p class="font-bold">72%</p></div></div>
+                    <div class="meteo-item"><i class="fa-solid fa-arrows-up-down text-purple"></i><div><span class="text-small text-muted">PBL Height</span><p class="font-bold text-red" id="det-pbl">320 m</p></div></div>
+                    <div class="meteo-item"><i class="fa-solid fa-temperature-arrow-up text-yellow"></i><div><span class="text-small text-muted">Surface Temp</span><p class="font-bold">32°C</p></div></div>
+                    <div class="meteo-item"><i class="fa-solid fa-eye text-muted"></i><div><span class="text-small text-muted">Visibility</span><p class="font-bold">2.4 km</p></div></div>
+                    <div class="meteo-item"><i class="fa-solid fa-sun text-yellow"></i><div><span class="text-small text-muted">Solar Rad.</span><p class="font-bold">340 W/m²</p></div></div>
+                </div>
+                <div class="feedback-box mt-normal">
+                    <i class="fa-solid fa-arrows-rotate text-accent"></i>
+                    <p class="text-small"><strong>Two-Way Feedback:</strong> PM2.5 aerosols blocking 18% solar radiation → reduced surface temp → weaker mixing → lower PBL → further pollutant trapping.</p>
+                </div>
+            </div>
+
+            <!-- Pollutants -->
+            <div class="card mt-normal">
+                <div class="flex-between mb-normal"><h4><i class="fa-solid fa-vial text-accent mr-small"></i> Top Pollutants</h4><span class="text-small text-muted">(µg/m³)</span></div>
+                <div class="pollutant-gauges">
+                    <div class="gauge"><div class="circle-gauge" style="--perc:78;--c:var(--c-orange);"><span id="sd-g-pm25">78</span></div><p class="text-small font-bold">PM2.5</p></div>
+                    <div class="gauge"><div class="circle-gauge" style="--perc:90;--c:var(--c-red);"><span id="sd-g-pm10">112</span></div><p class="text-small font-bold">PM10</p></div>
+                    <div class="gauge"><div class="circle-gauge" style="--perc:46;--c:var(--c-green);"><span id="sd-g-o3">46</span></div><p class="text-small font-bold">O₃</p></div>
+                    <div class="gauge"><div class="circle-gauge" style="--perc:28;--c:var(--c-green);"><span id="sd-g-no2">28</span></div><p class="text-small font-bold">NO₂</p></div>
+                    <div class="gauge"><div class="circle-gauge" style="--perc:14;--c:var(--c-green);"><span id="sd-g-so2">14</span></div><p class="text-small font-bold">SO₂</p></div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-btns mt-normal mb-large">
+                <button class="btn-primary btn-lg w-full" onclick="navTo('screen-safety')"><i class="fa-solid fa-shield-halved mr-small"></i> View Safety Recommendations <i class="fa-solid fa-arrow-right ml-small"></i></button>
+                <button class="btn-outline btn-lg w-full mt-small" onclick="showModal()"><i class="fa-solid fa-circle-info mr-small"></i> Show All Details (How it's predicted)</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== SCREEN 7: SAFETY RECOMMENDATIONS ========== -->
+    <section id="screen-safety" class="page">
+        <div class="page-nav">
+            <button class="nav-back" onclick="navTo('screen-details')"><i class="fa-solid fa-arrow-left"></i></button>
+            <h3>Safety Recommendations</h3>
+            <div style="width:40px;"></div>
+        </div>
+        <div class="safety-scroll">
+            <!-- Safety Hero -->
+            <div class="card safety-hero-card">
+                <p class="text-small text-muted" id="safety-date">Tue, 8 Sep &bull; Rohini, Delhi</p>
+                <div class="safety-hero-row mt-small">
+                    <div>
+                        <h1 class="safety-big-aqi">AQI <span id="safety-aqi-val" class="text-orange">156</span> <span class="dot extra-large" id="safety-aqi-dot"></span></h1>
+                        <p id="safety-aqi-text" class="font-bold text-orange">Unhealthy for Sensitive Groups</p>
+                    </div>
+                    <i class="fa-solid fa-head-side-mask fa-5x opacity-30"></i>
+                </div>
+            </div>
+
+            <!-- Mask Recommendation -->
+            <div class="card mask-card mt-normal" id="mask-card">
+                <div class="flex-between mb-small"><p class="text-small text-muted">Recommended Mask</p><i class="fa-solid fa-shield-halved text-accent"></i></div>
+                <div class="mask-info">
+                    <i class="fa-solid fa-mask fa-4x mr-normal opacity-60"></i>
+                    <div>
+                        <h2 id="mask-title" class="text-orange">N95 / KN95</h2>
+                        <p class="text-small text-muted mt-small" id="mask-desc">Better protection when outdoor air quality is poor. Cloth masks will NOT protect against PM2.5.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- What You Should Do -->
+            <h4 class="mt-large mb-normal">What You Should Do</h4>
+            <ul class="action-list">
+                <li class="card"><div class="action-icon-circle"><i class="fa-solid fa-mask"></i></div><div><p class="font-bold text-small">Wear a suitable mask when outdoors</p><span class="text-small text-muted">Use N95 or KN95 fitted respirator</span></div><i class="fa-solid fa-chevron-right text-muted ml-auto"></i></li>
+                <li class="card"><div class="action-icon-circle"><i class="fa-solid fa-person-running"></i></div><div><p class="font-bold text-small">Limit prolonged or intense outdoor activity</p><span class="text-small text-muted">Reschedule heavy workouts to early AM</span></div><i class="fa-solid fa-chevron-right text-muted ml-auto"></i></li>
+                <li class="card"><div class="action-icon-circle"><i class="fa-solid fa-window-closed"></i></div><div><p class="font-bold text-small">Keep windows closed</p><span class="text-small text-muted">When outdoor pollution is high or during inversion</span></div><i class="fa-solid fa-chevron-right text-muted ml-auto"></i></li>
+                <li class="card"><div class="action-icon-circle"><i class="fa-solid fa-fan"></i></div><div><p class="font-bold text-small">Prefer cleaner indoor air</p><span class="text-small text-muted">Use HEPA air purifiers if available</span></div><i class="fa-solid fa-chevron-right text-muted ml-auto"></i></li>
+                <li class="card"><div class="action-icon-circle"><i class="fa-solid fa-droplet"></i></div><div><p class="font-bold text-small">Stay hydrated</p><span class="text-small text-muted">Helps flush environmental toxins</span></div><i class="fa-solid fa-chevron-right text-muted ml-auto"></i></li>
+                <li class="card"><div class="action-icon-circle"><i class="fa-solid fa-chart-line"></i></div><div><p class="font-bold text-small">Keep monitoring AQI</p><span class="text-small text-muted">Conditions change hourly during inversion events</span></div><i class="fa-solid fa-chevron-right text-muted ml-auto"></i></li>
+            </ul>
+
+            <!-- Sensitive Groups Warning -->
+            <div class="card alert-card mt-large mb-large">
+                <i class="fa-solid fa-triangle-exclamation text-orange fa-2x"></i>
+                <div>
+                    <h4 class="text-orange">Sensitive Groups Warning</h4>
+                    <p class="text-small mt-small">Children, elderly and people with respiratory or heart conditions should avoid prolonged outdoor activity. During atmospheric inversion events, exposure risk is significantly elevated.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== MODAL ========== -->
+    <div id="info-modal" class="modal-overlay hidden">
+        <div class="modal-content card">
+            <div class="modal-header flex-between"><h3><i class="fa-solid fa-circle-info text-accent mr-small"></i> How is AQI Predicted?</h3><button class="icon-btn-small" onclick="hideModal()"><i class="fa-solid fa-xmark"></i></button></div>
+            <div class="modal-body mt-normal">
+                <h4>Stage 1: WRF-Chem</h4>
+                <p class="text-small text-muted mt-small">High-resolution coupled meteorological-chemical transport model. Simulates atmospheric physics (wind, temp, PBL height) interlinked with chemical species (PM2.5, PM10, O₃, NOx). Captures two-way feedback between weather and pollutants.</p>
+                <h4 class="mt-normal">Stage 2: TensorFlow Model 2</h4>
+                <p class="text-small text-muted mt-small">ML regression model trained on previous years' data. Adjusts WRF-Chem baseline for:</p>
+                <ul class="modal-list mt-small">
+                    <li><i class="fa-solid fa-fire text-orange"></i> Time of year (crop burning season + traffic patterns)</li>
+                    <li><i class="fa-solid fa-calendar-week text-accent"></i> Day of week (weekday vs weekend emissions)</li>
+                    <li><i class="fa-solid fa-flag text-yellow"></i> National holidays (Republic Day, Diwali fireworks, etc.)</li>
+                </ul>
+                <h4 class="mt-normal">Key Innovation</h4>
+                <p class="text-small text-muted mt-small">Unlike standard models, AirAware captures the dynamic feedback loop: atmospheric inversion traps PM2.5 → PM2.5 blocks sunlight → reduced temperature → weaker mixing → lower PBL → more trapping. This coupled approach yields significantly more accurate 72-hour forecasts.</p>
+            </div>
+        </div>
     </div>
-    
-    <!-- App Scripts -->
-    <script src="js/api.js"></script>
-    <script src="js/map.js"></script>
-    <script src="js/charts.js"></script>
-    <script src="js/health.js"></script>
-    <script src="js/inversion.js"></script>
-    <script src="js/app.js"></script>
+
+    <script src="app.js"></script>
 </body>
 </html>
